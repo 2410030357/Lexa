@@ -30,6 +30,10 @@ app.use('/api/search',    require('./routes/search'));
 app.use('/api/documents', require('./routes/documents'));
 app.use('/api/analytics', require('./routes/analytics'));
 
+app.get('/test-analytics', (req, res) => {
+  res.json({ test: 'analytics route working' });
+});
+
 app.get('/', (req, res) => {
   res.json({ service: 'Lexa Backend API', version: '2.0.0', status: 'ready' });
 });
