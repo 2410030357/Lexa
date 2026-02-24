@@ -1,109 +1,73 @@
 import { useState } from 'react'
 
-const IconFile = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:13,height:13}}>
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-    <polyline points="14 2 14 8 20 8"/>
-  </svg>
-)
-const IconChevronDown = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}>
-    <polyline points="6 9 12 15 18 9"/>
-  </svg>
-)
-const IconChevronUp = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}>
-    <polyline points="18 15 12 9 6 15"/>
-  </svg>
-)
-
 export default function ResultCard({ result, index }) {
   const [expanded, setExpanded] = useState(false)
 
-  const relevance = result.relevancePercent || Math.round((result.vectorScore || 0) * 100)
-  const relevanceColor = relevance > 70 ? 'var(--green)' : relevance > 40 ? 'var(--purple-light)' : 'var(--text-muted)'
-
-  const preview = (text, max = 200) => text.length > max ? text.slice(0, max) + '…' : text
-
-  const staggerClass = index < 6 ? ` stagger-${index + 1}` : ''
+  const vectorScore  = Math.round((result.vectorScore  || 0) * 100)
+  const lexicalScore = Math.round((result.lexicalScore || 0) * 100)
+  const rrfScore     = Math.round((result.score        || 0) * 100)
 
   return (
     <div
-      className={`result-card${staggerClass}`}
+      className={`result-card stagger-${Math.min(index+1,6)}`}
       onClick={() => setExpanded(e => !e)}
+      style={{cursor:'pointer'}}
     >
       <div className="result-inner">
-
-        {/* Rank + relevance */}
         <div className="result-rank">
           <div className="rank-num">{index + 1}</div>
-          <div className="rank-pct" style={{ color: relevanceColor }}>{relevance}%</div>
+          <div className="rank-pct" style={{color: rrfScore > 60 ? '#00ED64' : '#A855F7'}}>
+            {rrfScore}%
+          </div>
         </div>
 
-        {/* Content */}
         <div className="result-content">
-          {/* Header row */}
           <div className="result-header">
             <div className="result-title">
-              <IconFile />
-              <span>{result.title}</span>
-              {result.chunk_index > 0 && (
-                <span className="chunk-label">
-                  chunk {result.chunk_index + 1}/{result.total_chunks}
-                </span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:13,height:13,color:'#A78BFA',flexShrink:0}}>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              {result.title}
+              {result.chunk_index !== undefined && (
+                <span className="chunk-label">· chunk {result.chunk_index + 1}</span>
               )}
             </div>
             <div className="pills-row">
               {result.category && <span className="pill-cat">{result.category}</span>}
-              {result.tags?.slice(0, 2).map(t => (
-                <span key={t} className="pill-tag">{t}</span>
-              ))}
+              {result.tags?.[0] && <span className="pill-tag">{result.tags[0]}</span>}
             </div>
           </div>
 
-          {/* Text */}
           <div className="result-text">
-            {expanded ? result.content : preview(result.content)}
+            {expanded
+              ? result.content
+              : (result.content?.slice(0, 220) + (result.content?.length > 220 ? '...' : ''))}
           </div>
 
-          {/* Score bars */}
           <div className="score-bars">
-            {result.vectorScore > 0 && (
-              <div className="score-row">
-                <span className="score-label">Vector</span>
-                <div className="score-track">
-                  <div
-                    className="score-fill green"
-                    style={{ width: `${Math.min(100, result.vectorScore * 100)}%` }}
-                  />
-                </div>
-                <span className="score-val green">
-                  {(result.vectorScore * 100).toFixed(0)}%
-                </span>
+            <div className="score-row">
+              <span className="score-label">Vector</span>
+              <div className="score-track">
+                <div className="score-fill green" style={{width:`${vectorScore}%`}} />
               </div>
-            )}
-            {result.textScore > 0 && (
-              <div className="score-row">
-                <span className="score-label">Lexical</span>
-                <div className="score-track">
-                  <div
-                    className="score-fill purple"
-                    style={{ width: `${Math.min(100, result.textScore * 100)}%` }}
-                  />
-                </div>
-                <span className="score-val purple">
-                  {(result.textScore * 100).toFixed(0)}%
-                </span>
+              <span className="score-val green">{vectorScore}%</span>
+            </div>
+            <div className="score-row">
+              <span className="score-label">Lexical</span>
+              <div className="score-track">
+                <div className="score-fill purple" style={{width:`${lexicalScore}%`}} />
               </div>
-            )}
+              <span className="score-val purple">{lexicalScore}%</span>
+            </div>
           </div>
         </div>
 
-        {/* Expand toggle */}
-        <button className="result-expand-btn" onClick={e => { e.stopPropagation(); setExpanded(v => !v) }}>
-          {expanded ? <IconChevronUp /> : <IconChevronDown />}
+        <button className="result-expand-btn" onClick={e => { e.stopPropagation(); setExpanded(x => !x) }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16,transform: expanded?'rotate(180deg)':'none', transition:'transform 0.2s'}}>
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
         </button>
-
       </div>
     </div>
   )
