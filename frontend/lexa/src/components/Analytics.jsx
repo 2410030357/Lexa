@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
-const API = 'http://localhost:5000/api/analytics'
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 const IconSearch = ({ size = 13 }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:size,height:size}}>
