@@ -280,7 +280,7 @@ function DocumentsTab({ stats, onRefresh }) {
   const fetchDocs = async () => {
     try {
       setLoading(true)
-      const res = await axios.get('http://localhost:5000/api/documents')
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/documents`)
       setDocuments(res.data.documents || [])
     } catch { toast.error('Failed to load documents') }
     finally { setLoading(false) }
