@@ -7,7 +7,7 @@ import ResultCard from './ResultCard'
 import UploadModal from './UploadModal'
 import Analytics from './Analytics'
 
-const API = 'http://localhost:5000/api'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 // ── SVG ICONS (inline, no icon library needed) ──────────────
 const IconZap = () => (
