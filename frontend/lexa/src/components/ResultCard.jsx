@@ -3,9 +3,11 @@ import { useState } from 'react'
 export default function ResultCard({ result, index }) {
   const [expanded, setExpanded] = useState(false)
 
-  const vectorScore  = Math.round((result.vectorScore  || 0) * 100)
-  const lexicalScore = Math.round((result.lexicalScore || 0) * 100)
-  const rrfScore     = Math.round((result.score        || 0) * 100)
+  // vectorScore and lexicalScore come as 0-1 from backend → multiply by 100 for %
+  const vectorScore  = Math.min(100, Math.round((result.vectorScore  || 0) * 100))
+  const lexicalScore = Math.min(100, Math.round((result.lexicalScore || 0) * 100))
+  // RRF score is tiny decimal (e.g. 0.016) → multiply by 6000 to get readable %
+  const rrfScore     = Math.min(100, Math.round((result.score        || 0) * 6000))
 
   return (
     <div
