@@ -93,8 +93,11 @@ export default function Dashboard({ tab = 'search' }) {
       {/* ── HEADER ─────────────────────────────────────────── */}
       <header className="lexa-header">
         <div className="lexa-logo">
-          <div className="logo-icon">L</div>
-          <div>
+<img
+  src="/lexa-logo.png"
+  alt="LEXA"
+  style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover' }}
+/>          <div>
             <div className="logo-name">LEXA</div>
             <div className="logo-tagline">Semantic Intelligence Engine</div>
           </div>
