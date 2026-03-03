@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
@@ -11,19 +12,36 @@ import ChatTab from './ChatTab'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
-export default function Dashboard() {
+// ── Icon components (no emojis) ─────────────────────────────────
+const DocIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+  </svg>
+)
+
+const SearchIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </svg>
+)
+
+export default function Dashboard({ tab = 'search' }) {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [results, setResults]       = useState([])
   const [summary, setSummary]       = useState(null)
   const [loading, setLoading]       = useState(false)
   const [meta, setMeta]             = useState(null)
   const [stats, setStats]           = useState(null)
-  const [activeTab, setActiveTab]   = useState('search')
+  const [activeTab, setActiveTab]   = useState(tab)
   const [showUpload, setShowUpload] = useState(false)
   const [searched, setSearched]     = useState(false)
   const [showDemo, setShowDemo]     = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
 
+  // Sync tab from route prop
+  useEffect(() => { setActiveTab(tab) }, [tab])
   useEffect(() => { fetchStats() }, [])
 
   const fetchStats = async () => {
@@ -43,21 +61,36 @@ export default function Dashboard() {
       setSummary(res.data.summary)
       setMeta(res.data.meta)
       setActiveTab('search')
+      navigate('/search')
     } catch(err) {
       toast.error('Search failed. Make sure both services are running.')
     } finally { setLoading(false) }
-  }, [])
+  }, [navigate])
+
+  const navTabStyle = (id) => ({
+    padding: '8px 18px',
+    borderRadius: 8,
+    fontWeight: activeTab === id ? 700 : 500,
+    fontSize: 14,
+    color: activeTab === id ? '#ffffff' : 'rgba(255,255,255,0.5)',
+    background: activeTab === id ? 'rgba(124,58,237,0.25)' : 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    textDecoration: 'none',
+    display: 'inline-block'
+  })
 
   const tabs = [
-    { id: 'search',    label: 'Search'},
-    { id: 'chat',      label: 'AI Chat'},
-    { id: 'documents', label: 'Documents'},
-    { id: 'analytics', label: 'Analytics' },
+    { id: 'search',    label: 'Search',    path: '/search' },
+    { id: 'chat',      label: 'AI Chat',   path: '/ai-chat' },
+    { id: 'documents', label: 'Documents', path: '/documents' },
+    { id: 'analytics', label: 'Analytics', path: '/analytics' },
   ]
 
   return (
     <>
-      {/* HEADER */}
+      {/* ── HEADER ─────────────────────────────────────────── */}
       <header className="lexa-header">
         <div className="lexa-logo">
           <div className="logo-icon">L</div>
@@ -68,21 +101,25 @@ export default function Dashboard() {
         </div>
 
         <nav className="lexa-nav">
-          {tabs.map(({ id, label, icon }) => (
-            <button key={id} onClick={() => setActiveTab(id)}
-              className={`nav-tab${activeTab===id?' active':''}`}>
-              {icon} {label}
-            </button>
+          {tabs.map(({ id, label, path }) => (
+            <NavLink
+              key={id}
+              to={path}
+              onClick={() => setActiveTab(id)}
+              style={navTabStyle(id)}
+            >
+              {label}
+            </NavLink>
           ))}
         </nav>
 
         <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="atlas-badge"><span className="atlas-dot" />MongoDB Atlas</div>
+          {/* Upload button */}
           <button className="btn-upload" onClick={() => setShowUpload(true)}>
             Upload Doc
           </button>
 
-          {/* User Avatar */}
+          {/* User avatar */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setShowUserMenu(m => !m)}
@@ -145,7 +182,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* SEARCH TAB */}
+      {/* ── SEARCH TAB ─────────────────────────────────────── */}
       {activeTab === 'search' && (
         <main className="lexa-main">
           {!searched && (
@@ -162,15 +199,15 @@ export default function Dashboard() {
               {stats && (
                 <div className="stats-row">
                   <div className="stat-item">
-                    <div className="stat-value">{stats.totalDocuments||0}</div>
+                    <div className="stat-value">{stats.totalDocuments || 0}</div>
                     <div className="stat-label">Documents</div>
                   </div>
                   <div className="stat-item">
-                    <div className="stat-value">{stats.totalChunks||0}</div>
+                    <div className="stat-value">{stats.totalChunks || 0}</div>
                     <div className="stat-label">Vectors Indexed</div>
                   </div>
                   <div className="stat-item">
-                    <div className="stat-value">{stats.categoriesCount||0}</div>
+                    <div className="stat-value">{stats.categoriesCount || 0}</div>
                     <div className="stat-label">Categories</div>
                   </div>
                 </div>
@@ -179,7 +216,9 @@ export default function Dashboard() {
                 onClick={() => setShowDemo(d => !d)}
                 style={{
                   marginTop: 24,
-                  background: showDemo ? 'linear-gradient(135deg,#7C3AED,#A855F7)' : 'rgba(124,58,237,0.15)',
+                  background: showDemo
+                    ? 'linear-gradient(135deg,#7C3AED,#A855F7)'
+                    : 'rgba(124,58,237,0.15)',
                   border: '1px solid rgba(124,58,237,0.4)',
                   borderRadius: 12, padding: '10px 24px',
                   color: '#FFFFFF', fontWeight: 600, fontSize: 14,
@@ -199,6 +238,7 @@ export default function Dashboard() {
 
           <SearchBar onSearch={handleSearch} loading={loading} />
 
+          {/* Loading indicator — no emoji */}
           {loading && (
             <div className="loading-center">
               <div className="loading-ring-wrap">
@@ -228,7 +268,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* STRUCTURED AI SUMMARY */}
+          {/* AI Summary — no emojis, no hyphens in labels */}
           {summary && !loading && (
             <div className="ai-summary">
               <div className="ai-icon-wrap">L</div>
@@ -289,13 +329,20 @@ export default function Dashboard() {
 
           {results.length > 0 && !loading && (
             <div className="results-list">
-              {results.map((r, i) => <ResultCard key={r._id||i} result={r} index={i} />)}
+              {results.map((r, i) => <ResultCard key={r._id || i} result={r} index={i} />)}
             </div>
           )}
 
           {searched && !loading && results.length === 0 && (
             <div className="empty-state">
-              <div className="empty-icon">🔍</div>
+              <div style={{
+                width: 48, height: 48, margin: '0 auto 16px',
+                background: 'rgba(124,58,237,0.15)',
+                borderRadius: 12, display: 'flex',
+                alignItems: 'center', justifyContent: 'center'
+              }}>
+                <SearchIcon />
+              </div>
               <div className="empty-title">No results found</div>
               <div className="empty-sub">Try different keywords, or upload relevant documents first.</div>
             </div>
@@ -303,7 +350,7 @@ export default function Dashboard() {
         </main>
       )}
 
-      {activeTab === 'chat' && <ChatTab />}
+      {activeTab === 'chat'      && <ChatTab />}
       {activeTab === 'documents' && <DocumentsTab stats={stats} onRefresh={fetchStats} />}
       {activeTab === 'analytics' && <Analytics />}
 
@@ -317,9 +364,10 @@ export default function Dashboard() {
   )
 }
 
+// ── Documents Tab ───────────────────────────────────────────────
 function DocumentsTab({ stats, onRefresh }) {
   const [documents, setDocuments] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading]     = useState(true)
 
   useEffect(() => { fetchDocs() }, [])
 
@@ -346,14 +394,22 @@ function DocumentsTab({ stats, onRefresh }) {
       <div className="section-header">
         <div className="section-title">Document Library</div>
         <div className="section-sub">
-          {stats?.totalDocuments||0} documents · {stats?.totalChunks||0} semantic chunks indexed
+          {stats?.totalDocuments || 0} documents · {stats?.totalChunks || 0} semantic chunks indexed
         </div>
       </div>
+
       {loading ? (
-        <div style={{textAlign:'center',padding:'64px 0',color:'#C4B5FD'}}>Loading...</div>
+        <div style={{ textAlign: 'center', padding: '64px 0', color: '#C4B5FD' }}>Loading...</div>
       ) : documents.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📄</div>
+          <div style={{
+            width: 48, height: 48, margin: '0 auto 16px',
+            background: 'rgba(124,58,237,0.15)',
+            borderRadius: 12, display: 'flex',
+            alignItems: 'center', justifyContent: 'center', color: '#A855F7'
+          }}>
+            <DocIcon />
+          </div>
           <div className="empty-title">No documents yet</div>
           <div className="empty-sub">Click "Upload Doc" to add your first document.</div>
         </div>
@@ -361,7 +417,14 @@ function DocumentsTab({ stats, onRefresh }) {
         <div className="doc-grid">
           {documents.map((doc, i) => (
             <div key={i} className="doc-card">
-              <div className="doc-icon">📄</div>
+              <div style={{
+                width: 36, height: 36, borderRadius: 8,
+                background: 'rgba(124,58,237,0.15)',
+                display: 'flex', alignItems: 'center',
+                justifyContent: 'center', color: '#A855F7', flexShrink: 0
+              }}>
+                <DocIcon />
+              </div>
               <div className="doc-info">
                 <div className="doc-title">{doc._id}</div>
                 <div className="doc-preview">{doc.preview}</div>
@@ -369,7 +432,7 @@ function DocumentsTab({ stats, onRefresh }) {
                   {doc.category && <span className="pill-cat">{doc.category}</span>}
                   <span className="doc-stat">{doc.chunks} chunks</span>
                   <span className="doc-sep">·</span>
-                  <span className="doc-stat">{(doc.totalWords||0).toLocaleString()} words</span>
+                  <span className="doc-stat">{(doc.totalWords || 0).toLocaleString()} words</span>
                 </div>
               </div>
               <button className="btn-delete" onClick={() => deleteDoc(doc._id)}>Delete</button>
