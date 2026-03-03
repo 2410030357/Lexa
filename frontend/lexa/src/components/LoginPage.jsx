@@ -110,22 +110,21 @@ export default function LoginPage() {
             fontWeight: 800,
             color: '#FFFFFF'
           }}>
-            <div
-  style={{
-    width: 200,
-    height: 85,
-    borderRadius: 24,
-    overflow: 'hidden',
-    margin: '0 auto 20px'
-  }}
->
+<div style={{
+  width: 80,
+  height: 80,
+  borderRadius: 20,
+  overflow: 'hidden',        
+  boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+}}>
   <img
     src="/lexa-logo.png"
     alt="LEXA"
     style={{
       width: '100%',
       height: '100%',
-      objectFit: 'cover',
+      objectFit: 'cover',    
+      objectPosition: 'center',
       display: 'block'
     }}
   />
