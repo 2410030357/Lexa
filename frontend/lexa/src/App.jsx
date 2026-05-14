@@ -50,6 +50,9 @@ export default function App() {
             <Route path="/ai-chat"   element={<ProtectedRoute><Dashboard tab="chat" /></ProtectedRoute>} />
             <Route path="/documents" element={<ProtectedRoute><Dashboard tab="documents" /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Dashboard tab="analytics" /></ProtectedRoute>} />
+            <Route path="/db-query" element={<ProtectedRoute><Dashboard tab="nlquery" /></ProtectedRoute>} />
+            <Route path="/schema" element={<ProtectedRoute><Dashboard tab="schema" /></ProtectedRoute>} />
+            <Route path="/monitor" element={<ProtectedRoute><Dashboard tab="monitor" /></ProtectedRoute>} />
             <Route path="/" element={<Navigate to="/search" replace />} />
             <Route path="*" element={<Navigate to="/search" replace />} />
           </Routes>

@@ -9,6 +9,9 @@ import UploadModal from './UploadModal'
 import Analytics from './Analytics'
 import DemoPanel from './DemoPanel'
 import ChatTab from './ChatTab'
+import NLQueryPanel    from './NLQueryPanel'
+import SchemaAssistant from './SchemaAssistant'
+import AnomalyMonitor  from './AnomalyMonitor'
 
 function useTheme() {
   const [isLight, setIsLight] = useState(() => document.body.classList.contains('light-mode'))
@@ -137,11 +140,14 @@ export default function Dashboard({ tab = 'search' }) {
   })
 
   const tabs = [
-    { id: 'search',    label: 'Search',    path: '/search' },
-    { id: 'chat',      label: 'AI Chat',   path: '/ai-chat' },
-    { id: 'documents', label: 'Documents', path: '/documents' },
-    { id: 'analytics', label: 'Analytics', path: '/analytics' },
-  ]
+  { id: 'search',    label: 'Search',    path: '/search' },
+  { id: 'chat',      label: 'AI Chat',   path: '/ai-chat' },
+  { id: 'documents', label: 'Documents', path: '/documents' },
+  { id: 'analytics', label: 'Analytics', path: '/analytics' },
+  { id: 'nlquery',   label: 'DB Query',  path: '/db-query' },
+  { id: 'schema',    label: 'Schema AI', path: '/schema' },
+  { id: 'monitor',   label: 'Monitor',   path: '/monitor' },
+]
 
   return (
     <>
@@ -421,6 +427,9 @@ export default function Dashboard({ tab = 'search' }) {
       {activeTab === 'chat'      && <ChatTab />}
       {activeTab === 'documents' && <DocumentsTab stats={stats} onRefresh={fetchStats} />}
       {activeTab === 'analytics' && <Analytics />}
+      {activeTab === 'nlquery' && <NLQueryPanel />}
+      {activeTab === 'schema'  && <SchemaAssistant />}
+      {activeTab === 'monitor' && <AnomalyMonitor />}
 
       {showUpload && (
         <UploadModal

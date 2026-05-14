@@ -37,49 +37,73 @@ try {
 try {
   const authRoute = require('./routes/authRoute')
   app.use('/api/auth', authLimiter, authRoute)
-  console.log('✅ Auth routes loaded')
+  console.log(' Auth routes loaded')
 } catch(e) {
-  console.error('❌ Auth routes failed:', e.message)
+  console.error(' Auth routes failed:', e.message)
 }
 
 try {
   const searchRoutes = require('./routes/search')
   app.use('/api/search', searchLimiter, searchRoutes)
-  console.log('✅ Search routes loaded')
+  console.log(' Search routes loaded')
 } catch(e) {
-  console.error('❌ Search routes failed:', e.message)
+  console.error(' Search routes failed:', e.message)
+}
+
+try {
+  const schemaRoutes  = require('./routes/schema')
+  app.use('/api/schema',  schemaRoutes)
+  console.log(' Schema routes loaded')
+} catch(e) {
+  console.error(' Schema routes failed:', e.message)
+}
+
+try {
+  const nlqueryRoutes = require('./routes/nlquery')
+  app.use('/api/nlquery', nlqueryRoutes)
+  console.log(' NLP Query routes loaded')
+} catch(e) {
+  console.error(' NLP Query routes failed:', e.message)
+}
+
+try {
+  const anomalyRoutes = require('./routes/anomaly')
+  app.use('/api/anomaly', anomalyRoutes)
+  console.log(' Anomaly routes loaded')
+} catch(e) {
+  console.error(' Anomaly routes failed:', e.message)
 }
 
 try {
   const documentRoutes = require('./routes/documents')
   app.use('/api/documents', uploadLimiter, documentRoutes)
-  console.log('✅ Document routes loaded')
+  console.log(' Document routes loaded')
 } catch(e) {
-  console.error('❌ Document routes failed:', e.message)
+  console.error(' Document routes failed:', e.message)
 }
 
 try {
   const analyticsRoutes = require('./routes/analytics')
   app.use('/api/analytics', analyticsRoutes)
-  console.log('✅ Analytics routes loaded')
+  console.log(' Analytics routes loaded')
 } catch(e) {
-  console.error('❌ Analytics routes failed:', e.message)
+  console.error(' Analytics routes failed:', e.message)
 }
 
 try {
   const chatRoutes = require('./routes/chat')
   app.use('/api/chat', chatRoutes)
-  console.log('✅ Chat routes loaded')
+  console.log(' Chat routes loaded')
 } catch(e) {
-  console.error('❌ Chat routes failed:', e.message)
+  console.error(' Chat routes failed:', e.message)
 }
 
 try {
   const adminRoutes = require('./routes/admin')
   app.use('/api/admin', adminRoutes)
-  console.log('✅ Admin routes loaded')
+  console.log(' Admin routes loaded')
 } catch(e) {
-  console.error('❌ Admin routes failed:', e.message)
+  console.error(' Admin routes failed:', e.message)
 }
 
 // ── HEALTH CHECK ──────────────────────────────────────────────
@@ -105,7 +129,7 @@ async function start() {
     const client = await MongoClient.connect(process.env.MONGO_URI)
     const db = client.db('lexa_db')
     app.locals.db = db
-    console.log('✅ MongoDB Atlas connected')
+    console.log(' MongoDB Atlas connected')
 
     // TTL index for cache cleanup
     try {
@@ -116,10 +140,10 @@ async function start() {
     } catch(e) {}
 
     app.listen(PORT, () => {
-      console.log(`✅ Lexa Backend running on port ${PORT}`)
+      console.log(` Lexa Backend running on port ${PORT}`)
     })
   } catch(err) {
-    console.error('❌ Startup failed:', err.message)
+    console.error(' Startup failed:', err.message)
     process.exit(1)
   }
 }
