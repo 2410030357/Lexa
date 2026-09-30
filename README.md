@@ -30,19 +30,19 @@ This is the **vocabulary gap**. Lexa closes it permanently.
 
 ## What Lexa Does
 
-Lexa is a semantic document intelligence platform that understands the **meaning** of your query and matches it against the **meaning** of your documents — regardless of the words used.
+Lexa is a semantic document intelligence platform that understands the **meaning** of your query and matches it against the **meaning** of your documents - regardless of the words used.
 
 | Feature | Description |
 |---|---|
 | **Semantic Search** | Hybrid vector + lexical retrieval with RRF merge and AI reranking |
 | **AI Executive Summary** | Groq LLaMA 3.1 generates structured intelligence from retrieved documents |
-| **AI Chat** | Conversational RAG — every answer grounded in your actual documents |
-| **Document Comparison** | AI analysis across two documents — similarities, differences, verdict |
-| **Related Documents** | Semantic discovery using stored embeddings — zero re-embedding cost |
-| **NL Database Query** | Ask MongoDB questions in plain English — real aggregation pipelines execute live |
-| **Schema AI** | Describe your use case — AI generates production-grade MongoDB schema with indexes |
+| **AI Chat** | Conversational RAG - every answer grounded in your actual documents |
+| **Document Comparison** | AI analysis across two documents - similarities, differences, verdict |
+| **Related Documents** | Semantic discovery using stored embeddings - zero re-embedding cost |
+| **NL Database Query** | Ask MongoDB questions in plain English - real aggregation pipelines execute live |
+| **Schema AI** | Describe your use case - AI generates production-grade MongoDB schema with indexes |
 | **Anomaly Monitor** | Real-time security pattern detection using MongoDB aggregation pipelines |
-| **Analytics Dashboard** | $facet-powered insights — 5 dimensions in one database call |
+| **Analytics Dashboard** | $facet-powered insights - 5 dimensions in one database call |
 
 ---
 
