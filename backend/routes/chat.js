@@ -7,7 +7,7 @@ dotenv.config()
 const AI_URL   = process.env.AI_SERVICE_URL || 'http://localhost:8000'
 const GROQ_KEY = process.env.GROQ_API_KEY
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const MODEL    = 'llama-3.1-8b-instant'
+const MODEL    = 'llama3-8b-8192'
 
 function needsDocumentSearch(message) {
   const greetings = ['hi','hello','hey','howdy','hiya','sup','thanks','thank you','bye','goodbye','ok','okay','yes','no','cool','nice','great','awesome']
