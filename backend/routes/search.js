@@ -103,7 +103,7 @@ router.post('/compare', async (req, res) => {
     if (!docA || !docB) return res.status(404).json({ error: 'One or both documents not found' })
     const q = question || 'What are the key differences and similarities?'
     const groqRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
-      model: 'llama-3.1-8b-instant', max_tokens: 900, response_format: { type: 'json_object' },
+      model: 'openai/gpt-oss-20b', max_tokens: 900, response_format: { type: 'json_object' },
       messages: [{ role: 'user', content: `Compare these two documents and answer: "${q}"\n\nDoc A — ${docA.title}:\n${docA.content?.slice(0,1400)}\n\nDoc B — ${docB.title}:\n${docB.content?.slice(0,1400)}\n\nJSON only: {"similarities":["s1"],"differences":["d1"],"recommendation":"one sentence","verdict":"A is better | B is better | Both serve different purposes","confidence":85}` }]
     }, { headers: { Authorization: `Bearer ${GRQ}`, 'Content-Type': 'application/json' } })
     res.json({ docA: { title: docA.title, category: docA.category }, docB: { title: docB.title, category: docB.category }, question: q, analysis: JSON.parse(groqRes.data.choices[0]?.message?.content || '{}') })
@@ -127,7 +127,7 @@ async function structuredSummary(query, docs) {
   try {
     const context = docs.map((d, i) => `[${i+1}] ${d.title}: ${d.content?.slice(0,500)}`).join('\n\n')
     const groqRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
-      model: 'llama-3.1-8b-instant', max_tokens: 700, response_format: { type: 'json_object' },
+      model: 'openai/gpt-oss-20b', max_tokens: 700, response_format: { type: 'json_object' },
       messages: [{ role: 'user', content: `Answer ONLY from these documents: "${query}"\n\n${context}\n\nJSON only: {"intelligence":"2-3 sentence answer","keyInsights":["i1","i2","i3"],"risks":["r1","r2"],"trends":["t1","t2"],"confidence":85}` }]
     }, { headers: { Authorization: `Bearer ${GRQ}`, 'Content-Type': 'application/json' }, timeout: 20000 })
     return JSON.parse(groqRes.data.choices[0]?.message?.content || '{}')

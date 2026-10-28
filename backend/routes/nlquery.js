@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
     const dbContext = `Collections: documents (title, content, category, tags, organizationId, scope, word_count, createdAt, chunk_index), queries (query, resultCount, latencyMs, searchMode, timestamp, organizationId). Categories: ${docStats.map(d => `${d._id}(${d.count})`).join(', ')}. Total searches: ${queryCount}. organizationId: "${organizationId}"`
 
     const groqRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
-      model: 'llama-3.1-8b-instant', max_tokens: 800, response_format: { type: 'json_object' },
+      model: 'openai/gpt-oss-20b', max_tokens: 800, response_format: { type: 'json_object' },
       messages: [{ role: 'user', content: `MongoDB expert. Convert to aggregation pipeline.\n\n${dbContext}\n\nQuestion: "${question}"\n\nRules: only use listed fields, filter by organizationId, limit 20.\n\nJSON: {"collection":"documents or queries","pipeline":[...stages...],"explanation":"plain english","resultType":"count|list|stat"}` }]
     }, { headers: { Authorization: `Bearer ${GRQ}`, 'Content-Type': 'application/json' }, timeout: 20000 })
 
@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
     const results = await db.collection(parsed.collection).aggregate(parsed.pipeline).toArray()
 
     const summaryRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
-      model: 'llama-3.1-8b-instant', max_tokens: 200,
+      model: 'openai/gpt-oss-20b', max_tokens: 200,
       messages: [{ role: 'user', content: `Question: "${question}"\nResults: ${JSON.stringify(results.slice(0, 10))}\n\nAnswer in 1-2 clear sentences with specific numbers.` }]
     }, { headers: { Authorization: `Bearer ${GRQ}`, 'Content-Type': 'application/json' }, timeout: 15000 })
 
